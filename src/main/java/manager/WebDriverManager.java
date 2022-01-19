@@ -1,19 +1,20 @@
 package manager;
 
 
-import java.util.concurrent.TimeUnit;
+import dataProvider.DriverType;
+import dataProvider.EnvironmentType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import dataProvider.DriverType;
-import dataProvider.EnvironmentType;
+
+import java.util.concurrent.TimeUnit;
 
 public class WebDriverManager {
-    private WebDriver driver;
+    private static final String CHROME_DRIVER_PROPERTY = "webdriver.chrome.driver";
     private static DriverType driverType;
     private static EnvironmentType environmentType;
-    private static final String CHROME_DRIVER_PROPERTY = "webdriver.chrome.driver";
+    private WebDriver driver;
 
     public WebDriverManager() {
         driverType = FileReaderManager.getInstance().getConfigReader().getBrowser();
@@ -21,15 +22,17 @@ public class WebDriverManager {
     }
 
     public WebDriver getDriver() {
-        if(driver == null) driver = createDriver();
+        if (driver == null) driver = createDriver();
         return driver;
     }
 
     private WebDriver createDriver() {
         switch (environmentType) {
-            case LOCAL : driver = createLocalDriver();
+            case LOCAL:
+                driver = createLocalDriver();
                 break;
-            case REMOTE : driver = createRemoteDriver();
+            case REMOTE:
+                driver = createRemoteDriver();
                 break;
         }
         return driver;
@@ -41,17 +44,20 @@ public class WebDriverManager {
 
     private WebDriver createLocalDriver() {
         switch (driverType) {
-            case FIREFOX : driver = new FirefoxDriver();
+            case FIREFOX:
+                driver = new FirefoxDriver();
                 break;
-            case CHROME :
+            case CHROME:
                 System.setProperty(CHROME_DRIVER_PROPERTY, FileReaderManager.getInstance().getConfigReader().getDriverPath());
                 driver = new ChromeDriver();
                 break;
-            case INTERNETEXPLORER : driver = new InternetExplorerDriver();
+            case INTERNETEXPLORER:
+                driver = new InternetExplorerDriver();
                 break;
         }
 
-        if(FileReaderManager.getInstance().getConfigReader().getBrowserWindowSize()) driver.manage().window().maximize();
+        if (FileReaderManager.getInstance().getConfigReader().getBrowserWindowSize())
+            driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(FileReaderManager.getInstance().getConfigReader().getImplicitlyWait(), TimeUnit.SECONDS);
         return driver;
     }
